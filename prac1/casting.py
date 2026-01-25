@@ -1,0 +1,12 @@
+#1
+x=int(14.3)
+print(x)
+#2
+y=float(2)
+print(y)
+#3
+z=float("35")
+print(z)
+#4
+e=str(20)
+print(e)

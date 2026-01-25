@@ -1,0 +1,12 @@
+#1
+x=13563
+print(type(x))
+#2
+y=276e0
+print(type(y))
+#3
+z=3.6
+print(type(z))
+#4
+e=2j
+print(type(e))
