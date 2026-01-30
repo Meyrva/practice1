@@ -22,5 +22,5 @@ def myfunc():
     d="not bad"
 myfunc()
 
-print("The Sims is "+ d)
+print("The Sims is "+ d )
 
