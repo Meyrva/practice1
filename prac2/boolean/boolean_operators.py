@@ -1,4 +1,5 @@
 #1
+#Logical operators are used to combine conditional statements:
 x = 5
 
 print(1 < x < 10)

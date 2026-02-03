@@ -1,4 +1,5 @@
 #1
+#Comparison operators return True or False based on the comparison:
 x = 5
 y = 3
 
