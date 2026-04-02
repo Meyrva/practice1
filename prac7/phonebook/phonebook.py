@@ -1,6 +1,6 @@
 import psycopg2
 import csv
-from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
+from prac7.phonebook.config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
 
 
 
