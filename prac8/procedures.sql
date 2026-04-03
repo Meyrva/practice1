@@ -27,7 +27,7 @@ BEGIN
         IF length(p_phones[i]) < 10 THEN
             out_bad_names := array_append(out_bad_names, p_names[i]);
             out_bad_phones := array_append(out_bad_phones, p_phones[i]);
-            out_reasons := array_append(out_reasons, 'Телефон короче 10 символов');
+            out_reasons := array_append(out_reasons, 'phone less than 10 symbols');
         ELSE
             
             IF EXISTS (SELECT 1 FROM phonebook2 WHERE name = p_names[i]) THEN
