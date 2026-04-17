@@ -36,7 +36,6 @@ while run:
     now = datetime.datetime.now()
     second = now.second
     minute = now.minute
-
     
     angle_s = - (second * 6) 
     angle_m = - (minute * 6) 
