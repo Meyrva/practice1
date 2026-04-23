@@ -70,7 +70,6 @@ class Paint:
 
     def run(self):  
         while True:
-            
             mouse_button = pygame.mouse.get_pressed()
 
             for event in pygame.event.get():
