@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, random
 
 
 class Paint:
@@ -12,10 +12,18 @@ class Paint:
         
         self.radius = 15
         self.mode = 'blue'
-        self.points = []
+        
 
+        self.points = [] # A list for storing already completed lines 
+        self.cur_points = [] # A list for the points of the line that drawing right now
+        
+        self.circle_x, self.circle_y = 320, 240
+        self.rect_x, self.rect_y = 300, 240
+
+        self.is_erace = False
         self.draw_circle = False
         self.draw_rect = False
+
     def drawLineBetween(self, start, end, width, color_mode):
         
         if color_mode == 'blue':
@@ -25,9 +33,13 @@ class Paint:
         elif color_mode == 'green':
             color = (0, 255, 0)
         
-        dx = start[0]
-        dy = start[1]
+        dx = start[0] - end[0]
+        dy = start[1] - end[1]
         iterations = max(abs(dx), abs(dy))
+        
+        if iterations == 0:
+            pygame.draw.circle(self.screen, color, (x, y), width)
+            return 
         
         for i in range(iterations):
             progress = 1.0 * i / iterations
@@ -37,10 +49,24 @@ class Paint:
             pygame.draw.circle(self.screen, color, (x, y), width)
 
     def circle(self):
-        pygame.draw.circle(self.screen, self.mode,(320,240), 50 ) 
+        pygame.draw.circle(self.screen, self.mode, (self.circle_x, self.circle_y), 50)
 
     def rectangle(self):
-        pygame.draw.rect(self.screen, self.mode,(300,240,100,100), 50 ) 
+        pygame.draw.rect(self.screen, self.mode, (self.rect_x, self.rect_y, 100, 100))
+    
+    def eraser(self, start, end, width):
+        dx = start[0] - end[0]
+        dy = start[1] - end[1]
+        iterations = max(abs(dx), abs(dy))
+        if iterations == 0: 
+            pygame.draw.circle(self.screen, (0, 0, 0), start, width)
+        
+        for i in range(iterations):
+            progress = 1.0 * i / iterations
+            aprogress = 1 - progress
+            x = int(aprogress * start[0] + progress * end[0])
+            y = int(aprogress * start[1] + progress * end[1])
+            pygame.draw.circle(self.screen, (0, 0, 0), (x, y), width)
 
     def run(self):  
         while True:
@@ -49,10 +75,9 @@ class Paint:
 
             for event in pygame.event.get():
                 
-                # determin if X was clicked, or Ctrl+W or Alt+F4 was used
                 if event.type == pygame.QUIT:
-                    return
-                
+                    pygame.quit()
+                    sys.exit()
                 
                 if event.type == pygame.KEYDOWN:
                 
@@ -63,34 +88,64 @@ class Paint:
                         self.mode = 'green'
                     elif event.key == pygame.K_b:
                         self.mode = 'blue'
+                    elif event.key == pygame.K_w:
+                        self.is_erace = not self.is_erace
                     elif event.key == pygame.K_c:
                         self.draw_circle = not self.draw_circle
+                        if self.draw_circle: 
+                            self.circle_x = random.randint(50, 590)
+                            self.circle_y = random.randint(50, 430)
                     elif event.key == pygame.K_e:
                         self.draw_rect = not self.draw_rect
+                        if self.draw_rect: 
+                            self.rect_x = random.randint(0, 540)
+                            self.rect_y = random.randint(0, 380)
+                    
 
             # Getting the state of the mouse buttons (left, middle, right)
             if mouse_button[0]:
                 position = pygame.mouse.get_pos()
-                if not self.points or self.points[-1] != position:
-                    self.points.append(position)
-                    self.points = self.points[-256:]
+                if not self.cur_points or self.cur_points[-1] != position:
+                    self.cur_points.append(position)
+            else:
+                if self.cur_points:
+                    self.points.append({
+                        'line_points': self.cur_points,
+                        'line_mode': self.mode,
+                        'line_erace': self.is_erace,
+                        'line_radius': self.radius
+                    })
+                    self.cur_points = []
 
 
             self.screen.fill((0, 0, 0))
-            key = self.font.render("press to change color\n'r' to red\n'g' to green\n'b' to blue",True, (255,255,255))
+
+            key = self.font.render("R\G\B - colors \n W - Eraser \n C\E - Shapes",True, (255,255,255))
             self.screen.blit(key,(10,10))
-            shapes = self.font.render("press to draw\n'c' cicrle\n'e' rectangle",True, (255,255,255))
-            self.screen.blit(shapes,(530, 10))
+           
 
             if self.draw_circle:
                 self.circle()
             if self.draw_rect:
                 self.rectangle()
-            # draw all points
-            i = 0
-            while i < len(self.points) - 1:
-                self.drawLineBetween( self.points[i], self.points[i + 1], self.radius, self.mode)
-                i += 1
+
+            # draw lines
+            
+            for line in self.points:
+                pts = line['line_points']
+                for i in range(len(pts) - 1):
+                    if line['line_erace']:
+                        self.eraser(pts[i], pts[i+1], line['line_radius'])
+                    else:
+                        self.drawLineBetween(pts[i], pts[i+1], line['line_radius'], line['line_mode'])
+
+            # draw the line that are drawing now
+            if self.cur_points:
+                for i in range(len(self.cur_points) - 1):
+                    if self.is_erace:
+                        self.eraser(self.cur_points[i], self.cur_points[i+1], self.radius)
+                    else:
+                        self.drawLineBetween(self.cur_points[i], self.cur_points[i+1], self.radius, self.mode)
             
             pygame.display.flip()
             self.clock.tick(60)
