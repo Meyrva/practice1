@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS phones (
     id SERIAL PRIMARY KEY,
     contact_id INTEGER REFERENCES contacts(id) ON DELETE CASCADE,
     phone VARCHAR(20) NOT NULL,
+    type VARCHAR(20) DEFAULT 'mobile',
     UNIQUE(contact_id, phone)
 );
 
