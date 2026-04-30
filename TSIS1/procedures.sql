@@ -19,6 +19,10 @@ CREATE TABLE IF NOT EXISTS phones (
     type       VARCHAR(10) CHECK (type IN ('home', 'work', 'mobile'))
 );
 
+INSERT INTO groups (name) VALUES ('Friends'), ('Family'), ('Work') 
+ON CONFLICT (name) DO NOTHING;
+
+
 -- insert a new user by name and phone
 CREATE OR REPLACE PROCEDURE upsert(p_name TEXT, p_phone TEXT, p_email TEXT, p_birthday DATE)
 AS $$
