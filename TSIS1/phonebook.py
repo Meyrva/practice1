@@ -10,6 +10,14 @@ def load_sql_scripts():
         conn.commit()
         conn.close()
 
+def create_schema():
+    conn = get_connection()
+    with conn.cursor() as cur:
+        with open('schema.sql', 'r', encoding='utf-8') as f:
+            cur.execute(f.read())
+    conn.commit()
+    conn.close()
+
 def print_contacts(rows):
     for row in rows:
         print(f"| {row[0]:<15} | {row[1]:<20} | {row[2] } |")
@@ -185,5 +193,6 @@ def main():
             conn.close()
 
 if __name__ == "__main__":
+    create_schema()
     load_sql_scripts() 
     main()
