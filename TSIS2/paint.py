@@ -179,6 +179,7 @@ class Paint:
                         continue
 
                     if event.key == pygame.K_t:
+                        self.tool = 'text'
                         self.is_typing = True
                         self.text = ""
                         self.text_pos = pygame.mouse.get_pos() 
@@ -217,7 +218,7 @@ class Paint:
                     # TSIS 3.3   switch to fill tool
                     elif event.key == pygame.K_n: 
                         self.tool = 'fill'
-
+                        self.draw_shape = False
                     # TSIS 3.4   save canvas
                     elif event.key == pygame.K_s and (event.mod & pygame.KMOD_CTRL):
                         now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -240,7 +241,7 @@ class Paint:
                     if event.button == 3: # right mouse button cancel drawing shapes
                         self.draw_shape = False
 
-                    if event.button == 1 and self.draw_shape: # left mouse button save drawing shapes
+                    if event.button == 1 : # left mouse button save drawing shapes
                         color = (0, 0, 255) if self.mode == 'blue' else (255, 0, 0) if self.mode == 'red' else (0, 255, 0)
                         
                         if self.tool == 'fill':
@@ -250,17 +251,16 @@ class Paint:
                             self.draw_shape = False
 
 
-                # TSIS 3.5   text tool
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    if self.tool == 'text':
-                        if not self.is_typing:
-                            self.is_typing = True
-                            self.text_pos = event.pos
-                            self.text = "" 
-                        else:
-                            self.render_text_to_canvas()
-                            self.text_pos = event.pos
-                            self.text = ""
+                    # TSIS 3.5   text tool
+                
+                        elif self.tool == 'text':
+                            if not self.is_typing:
+                                self.is_typing = True
+                                self.text_pos = event.pos
+                                self.text = "" 
+                            else:
+                                self.render_text_to_canvas()
+            
 
                 #TSIS 3.5 character input
                 if event.type == pygame.KEYDOWN and self.is_typing:
@@ -294,7 +294,7 @@ class Paint:
             self.screen.blit(self.canvas, (0,0))
 
 
-            key = self.font.render("1-small, 2-med, 3-big \nR\G\B - colors \n W - on\off Eraser \n click D - choose Shape \n P\L - pencil\straight line tool \n F\T - brush\ text",True, (255,255,255))
+            key = self.font.render("1-small, 2-med, 3-big \nR\G\B - colors \n W - on|off Eraser \n D - Shapes \n P\L - pencil|straight line tool \n N\F\T - fill|brush|text",True, (255,255,255))
             self.screen.blit(key,(10,10))
 
             if self.draw_shape:
