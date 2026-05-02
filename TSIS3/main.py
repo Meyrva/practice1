@@ -54,7 +54,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def move(self):
         global SCORE
-        self.rect.move_ip(0,SPEED)
+        self.rect.move_ip(0,SPEED+1)
         # If the car has gone beyond the lower border of the screen:
         if(self.rect.bottom > 600):
             SCORE += 1 # Award a point for a successful dodge
@@ -71,7 +71,7 @@ class obstacles(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (random.randint(40,WIDTH-40),0)
     def move(self):
-        self.rect.move_ip(0,4)
+        self.rect.move_ip(0,SPEED-1)
         if(self.rect.bottom > 600):
             self.kill()
 
@@ -112,7 +112,7 @@ class SpeedStrip(pygame.sprite.Sprite):
         self.rect.center = (random.randint(50, 100),-100)
 
     def move(self):
-        self.rect.move_ip(0,3)
+        self.rect.move_ip(0,SPEED-2)
         if self.rect.top > 600:
             self.kill()
 
@@ -219,7 +219,14 @@ def load_scores():
         return []
 
 def reset_game():
-    global P1, E1, C, enemies, powerups, all_sprites, obstacl, coin, strips, SCORE, AMOUNT_COINTS, SPEED, DISTANCE, USER_NAME
+    global P1, E1, C, enemies, powerups, all_sprites, obstacl, coin, strips, SCORE, AMOUNT_COINTS, SPEED, DISTANCE
+    
+    if DIFFICULT == 'EASY':
+        SPEED = 5
+    elif DIFFICULT == 'MEDIUM':
+        SPEED = 8
+    else:
+        SPEED = 15
     P1 = Player()
     E1 = Enemy()
     C = Coins()
@@ -239,7 +246,7 @@ def reset_game():
     SPEED = 5
     SCORE = 0
     AMOUNT_COINTS = 0
-    DISTANCE = 5
+    DISTANCE = 0
 
 def draw_text(text, font, color, x, y, center=True):
     img = font.render(text, True, color)
@@ -286,14 +293,26 @@ def menu_screen():
     elif res_exit:
         pygame.quit()
         sys.exit()
-
+# TSIS 3.5   2)Settings screen
 def settings_screen():
-    global STATE, SOUND_ON, CAR_COLOR
+    global STATE, SOUND_ON,DIFFICULT, CAR_COLOR, SPEED
     screen.blit(background, (0, 0))
     draw_text("SETTINGS", font_score, WHITE, WIDTH//2, 100)
     
+    if button(f"DIFFICULTY: {DIFFICULT}", 150, "TOGGLE_D"):
+        if DIFFICULT == "EASY":
+            DIFFICULT = "MEDIUM"
+            SPEED = 8
+        elif DIFFICULT == "MEDIUM":
+            DIFFICULT ="HARD"
+            SPEED = 12
+        else:
+            DIFFICULT = "EASY"
+            SPEED = 5
+       
+
     s_label = f"SOUND: {'ON' if SOUND_ON else 'OFF'}"
-    if button(s_label, 200, "TOGGLE_S"): 
+    if button(s_label, 210, "TOGGLE_S"): 
         SOUND_ON = not SOUND_ON
     
     c_label = f"COLOR: {'YELLOW' if CAR_COLOR == YELLOW else 'GREEN'}"
@@ -487,7 +506,7 @@ while run:
             # TSIS 3.2 Difficulty scaling    
             # the speed of Enemy increases every 2 coins
             if AMOUNT_COINTS % 2 ==0:
-                SPEED += 0.5
+                SPEED += 1
 
         # Crash check (collision of player and enemy, obstacl)
         col_enemie =pygame.sprite.spritecollideany(P1, enemies) 
